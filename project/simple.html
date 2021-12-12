@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>LIINE</title>
+<link rel="stylesheet" href="./css/chatbot.css">
+<link rel="stylesheet" href="./css/reset.css">
+<!-- アイコン作成 -->
+<link rel="icon" type="image/x-icon" href="./imgs/line.ico" >
+</head>
+<body>
+
+<!-- コンテンツ表示画面 -->
+
+<div id="all">
+    <div id="output"></div>
+    <div id="chatbox">
+            <div >
+                <textarea name="" id="text" rows="1" ></textarea>
+                <button id="send">送信</button>
+            </div>        
+            名前: <input type="text" id="uname">
+    </div>
+</div>
+
+<!--/ コンテンツ表示画面 -->
+
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="./js/jquery-3.6.0.min.js"></script>
+<!-- JQuery -->
+
+<!--** 以下Firebase **-->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+    import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+        from "https://cdnjs.cloudflare.com/ajax/libs/firebase/9.6.1/firebase-database.min.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "",
+      authDomain: "chatbot-4ba25.firebaseapp.com",
+      projectId: "chatbot-4ba25",
+      storageBucket: "chatbot-4ba25.appspot.com",
+      messagingSenderId: "265958321750",
+      appId: "1:265958321750:web:b0dfd555a9e8b6828195f7"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    const db = getDatabase(app); // RealtimeDBに接続
+    const dbRef = ref(db, "chat"); // RealtimeDB内の"chat"を使う
+
+    $("#send").on("click", function () {
+        const msg = {
+            uname: $("#uname").val(),
+            text: $("#text").val()
+        }
+        const newPostRef = push(dbRef); // pushできる状態にする
+        set(newPostRef, msg); // DBに値を送信
+        $("#text").val("");
+
+        
+        
+    });
+
+    onChildAdded(dbRef, function (data) {
+        const msg = data.val();
+        // 以下でkeyを取得できる
+        const key = data.key; 
+        let h = '<div id="myname">';
+            h += msg.uname;
+            h += "</div>";
+            h += '<div id="mytext">';
+            h += msg.text;
+            h += "</div>"
+            h += '<div id="time"></div>'
+            h += '<button class="remove" id="';
+            h += key;
+            h += '">削除</button>';
+        $("#output").append(h); // #output の最後に追加
+        // テキストの内容を更新
+        
+        // 時間を表示
+        let now = new Date();
+        let month = now.getMonth() + 1;
+        let day = now.getDate();
+        let time = now.getHours() + ':' + now.getMinutes();
+        $("#output").append(month + '/' + day + ' ' + time);
+
+        // windowを最終頁にする。
+        window.scrollTo(0,document.querySelector("body").scrollHeight);   
+        
+    });
+
+    // 削除部分
+    $(document).on("click",".remove",function(){
+            remove(ref(db, "chat/" +$(this).attr("id")));
+            $(this).parent().remove();
+            window.location.reload();
+    });
+
+   // ボタンを押した時刻の取得
+    
+
+    // enter+controlキーで送信
+	$(function(){
+	//テキストエリアがアクティブの状態にキーが押されたらイベントを発火
+        $('#text').keydown(function(e){
+            //ctrlキーが押されてる状態か判定
+            if(event.ctrlKey){
+                //押されたキー（e.keyCode）が13（Enter）か　そしてテキストエリアに何かが入力されているか判定
+                if(e.keyCode === 13 && $(this).val()){
+                    //フォームを送信
+                    const uname = $("#uname").val();
+                    const text = $("#text").val();
+                    const msg = {
+                        uname: uname,
+                        text: text
+                    }; 
+                    const newPostRef = push(dbRef);
+                    set(newPostRef, msg);
+                    $("#text").val("");
+                }
+            }
+        });
+    });
+
+    // 改行で高さを変える
+    $(function() {
+        let $text = $('#text');
+        let lineHeight = parseInt($text.css('lineHeight'));
+        $text.on('input', function(e) {
+            let lines = ($(this).val() + '\n').match(/\n/g).length;
+            $(this).height(lineHeight * lines);
+        });
+    });
+
+
+    // 最終行を常に取得
+
+  </script>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+
+#chatbox{
+
+    /* サイズ設定 */
+    width: auto;
+    /* 置き場所の設定 */
+    position: fixed;
+    bottom: 0px;
+    background-color: #fff;
+    }
+
+
+#text{
+    width: 250px;
+    max-height: 100px;
+    line-height: 20px;
+    
+}
+
+#output{
+    margin-bottom: 60px;
+    white-space: pre-wrap;
+}
+
+#mytext{
+    border: 2px solid;
+    border-radius: 4px;
+    width: 250px;
+
+}
